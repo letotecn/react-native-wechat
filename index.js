@@ -195,19 +195,13 @@ export function shareToTimeline(data) {
  * @method shareToSession
  * @param {Object} data
  * @param {String} data.thumbImage - Thumb image of the message, which can be a uri or a resource id.
- * @param {String} data.type - Type of this message. Could be {news|text|imageUrl|imageFile|imageResource|video|audio|file|weapp}
+ * @param {String} data.type - Type of this message. Could be {news|text|imageUrl|imageFile|imageResource|video|audio|file}
  * @param {String} data.webpageUrl - Required if type equals news. The webpage link to share.
  * @param {String} data.imageUrl - Provide a remote image if type equals image.
  * @param {String} data.videoUrl - Provide a remote video if type equals video.
  * @param {String} data.musicUrl - Provide a remote music if type equals audio.
  * @param {String} data.filePath - Provide a local file if type equals file.
  * @param {String} data.fileExtension - Provide the file type if type equals file.
- *
- * @param {String} data.webpageUrl - 兼容低版本的网页链接
- * @param {String} data.userName - 小程序原始id
- * @param {String} data.path - 小程序页面的路径
- * @param {DataURLString} data.hdImageData - 小程序节点高清大图，小于128k
- * @param {String} data.miniProgramType - oneOf(['release', 'preview', 'develop']) - 小程序分享类型，主要用于开发测试，默认为 release. only for ios.
  */
 export function shareToSession(data) {
   return new Promise((resolve, reject) => {
@@ -288,6 +282,30 @@ export function pay(data) {
       } else {
         reject(new WechatError(resp));
       }
+    });
+  });
+}
+
+/**
+ * wechat contract
+ * @param {Object} data
+ * @returns {Promise}
+ */
+
+export function contract(data) {
+  let url = 'https://api.mch.weixin.qq.com/papay/entrustweb?'
+  for (var key in data) {
+    if (key === 'notify_url') {
+      data[key] = encodeURIComponent(data[key])
+      if (Platform.OS === 'ios') data[key] = encodeURIComponent(data[key])
+    }
+    url = url + key + '=' + data[key] + '&'
+  }
+  url = url.substr(0, url.length-1)
+  return new Promise((resolve, reject) => {
+    WeChat.contract(url, result => {
+      if (result) reject("WeChat API invoke returns false.")
+        else resolve('WeChat_GOBACK')
     });
   });
 }
