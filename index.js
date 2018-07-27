@@ -301,7 +301,7 @@ export function contract(data) {
     }
     url = url + key + '=' + data[key] + '&'
   }
-  url = url.substr(0, url.length-1)
+  url = url+"return_app=1"
   return new Promise((resolve, reject) => {
     WeChat.contract(url, result => {
       if (result) reject("WeChat API invoke returns false.")
