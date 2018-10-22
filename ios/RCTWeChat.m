@@ -291,7 +291,21 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
                                        MediaTag:mediaTagName
                                        callBack:callback];
             
-        } else {
+        }else if([type isEqualToString:RCTWXShareTypeWeapp]){
+            WXMiniProgramObject *miniObject = [WXMiniProgramObject object];
+            miniObject.webpageUrl=aData[@"webpageUrl"];
+            miniObject.userName=aData[@"userName"];
+            miniObject.path=aData[@"path"];
+            [self shareToWeixinWithMediaMessage:aScene
+                                          Title:title
+                                    Description:description
+                                         Object:miniObject
+                                     MessageExt:messageExt
+                                  MessageAction:messageAction
+                                     ThumbImage:aThumbImage
+                                       MediaTag:mediaTagName
+                                       callBack:callback];
+        }else {
             callback(@[@"message type unsupported"]);
         }
     }
