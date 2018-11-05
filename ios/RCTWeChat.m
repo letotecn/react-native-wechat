@@ -296,6 +296,11 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
             miniObject.webpageUrl=aData[@"webpageUrl"];
             miniObject.userName=aData[@"userName"];
             miniObject.path=aData[@"path"];
+            if(aData[@"isDebug"]){
+                miniObject.miniProgramType=WXMiniProgramTypeTest;
+            }else{
+                miniObject.miniProgramType=WXMiniProgramTypeRelease;
+            }
             [self shareToWeixinWithMediaMessage:aScene
                                           Title:title
                                     Description:description
@@ -315,10 +320,15 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
 - (void)shareToWeixinWithData:(NSDictionary *)aData scene:(int)aScene callback:(RCTResponseSenderBlock)aCallBack
 {
     NSString *imageUrl = aData[RCTWXShareTypeThumbImageUrl];
+    NSString *type = aData[@"type"];
+    CGFloat size = 100;
+    if([type isEqualToString:RCTWXShareTypeWeapp]){
+        size = 350;
+    }
     if (imageUrl.length && _bridge.imageLoader) {
         NSURL *url = [NSURL URLWithString:imageUrl];
         NSURLRequest *imageRequest = [NSURLRequest requestWithURL:url];
-        [_bridge.imageLoader loadImageWithURLRequest:imageRequest size:CGSizeMake(100, 100) scale:1 clipped:FALSE resizeMode:RCTResizeModeStretch progressBlock:nil partialLoadBlock:nil
+        [_bridge.imageLoader loadImageWithURLRequest:imageRequest size:CGSizeMake(size, size) scale:1 clipped:FALSE resizeMode:RCTResizeModeStretch progressBlock:nil partialLoadBlock:nil
                                      completionBlock:^(NSError *error, UIImage *image) {
                                          [self shareToWeixinWithData:aData thumbImage:image scene:aScene callBack:aCallBack];
                                      }];

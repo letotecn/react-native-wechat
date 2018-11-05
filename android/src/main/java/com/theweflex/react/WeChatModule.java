@@ -60,6 +60,7 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     private final static String NOT_REGISTERED = "registerApp required.";
     private final static String INVOKE_FAILED = "WeChat API invoke returns false.";
     private final static String INVALID_ARGUMENT = "invalid argument.";
+
     public WeChatModule(ReactApplicationContext context) {
         super(context);
     }
@@ -72,9 +73,10 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     /**
      * fix Native module WeChatModule tried to override WeChatModule for module name RCTWeChat.
      * If this was your intention, return true from WeChatModule#canOverrideExistingModule() bug
+     *
      * @return
      */
-    public boolean canOverrideExistingModule(){
+    public boolean canOverrideExistingModule() {
         return true;
     }
 
@@ -173,7 +175,7 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
         }
         _share(SendMessageToWX.Req.WXSceneSession, data, callback);
     }
-    
+
     @ReactMethod
     public void shareToFavorite(ReadableMap data, Callback callback) {
         if (api == null) {
@@ -184,7 +186,7 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     }
 
     @ReactMethod
-    public void pay(ReadableMap data, Callback callback){
+    public void pay(ReadableMap data, Callback callback) {
         PayReq payReq = new PayReq();
         if (data.hasKey("partnerId")) {
             payReq.partnerId = data.getString("partnerId");
@@ -212,7 +214,7 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     }
 
     @ReactMethod
-    public void contract(String url , Callback callback){
+    public void contract(String url, Callback callback) {
         OpenWebview.Req req = new OpenWebview.Req();
         req.url = url;
         callback.invoke(api.sendReq(req) ? null : INVOKE_FAILED);
@@ -246,9 +248,15 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
                 // ignore malformed uri, then attempt to extract resource ID.
             }
         }
+        ResizeOptions reSide;
+        if (data.getString("type").equals("weapp")) {
+            reSide = new ResizeOptions(350, 350);
+        } else {
+            reSide = new ResizeOptions(100, 100);
+        }
 
         if (uri != null) {
-            this._getImage(uri, new ResizeOptions(100, 100), new ImageCallback() {
+            this._getImage(uri, reSide, new ImageCallback() {
                 @Override
                 public void invoke(@Nullable Bitmap bitmap) {
                     WeChatModule.this._share(scene, data, bitmap, callback);
@@ -345,8 +353,8 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
             mediaObject = __jsonToMusicMedia(data);
         } else if (type.equals("file")) {
             mediaObject = __jsonToFileMedia(data);
-        }else if(type.equals("weapp")){
-            mediaObject= __jsonToMiniProgramMedia(data);
+        } else if (type.equals("weapp")) {
+            mediaObject = __jsonToMiniProgramMedia(data);
         }
 
         if (mediaObject == null) {
@@ -488,7 +496,15 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     private WXMiniProgramObject __jsonToMiniProgramMedia(ReadableMap data) {
         WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
         miniProgramObj.webpageUrl = data.getString("webpageUrl"); // 兼容低版本的网页链接
-        miniProgramObj.miniprogramType = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;// 正式版:0，测试版:1，体验版:2
+        if (data.hasKey("isDebug")) {
+            if (data.getBoolean("isDebug"))
+                miniProgramObj.miniprogramType = WXMiniProgramObject.MINIPROGRAM_TYPE_TEST;// 正式版:0，测试版:1，体验版:2
+            else {
+                miniProgramObj.miniprogramType = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;
+            }
+        }else{
+            miniProgramObj.miniprogramType = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;
+        }
         miniProgramObj.userName = data.getString("userName");     // 小程序原始id
         miniProgramObj.path = data.getString("path");
         return miniProgramObj;
