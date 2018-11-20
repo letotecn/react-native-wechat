@@ -296,7 +296,7 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
             miniObject.webpageUrl=aData[@"webpageUrl"];
             miniObject.userName=aData[@"userName"];
             miniObject.path=aData[@"path"];
-            if(aData[@"isDebug"]){
+            if([[aData objectForKey:@"isDebug"] boolValue] == YES){
                 miniObject.miniProgramType=WXMiniProgramTypeTest;
             }else{
                 miniObject.miniProgramType=WXMiniProgramTypeRelease;
