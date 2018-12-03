@@ -310,6 +310,14 @@ export function contract(data) {
   });
 }
 
+export function openWeApp(data) {
+  return new Promise((resolve, reject) => {
+    WeChat.openWeApp(data, result => {
+      if (result) reject("WeChat API invoke returns false.")
+        else resolve('WeChat_GOBACK')
+    });
+  });
+}
 /**
  * promises will reject with this error when API call finish with an errCode other than zero.
  */

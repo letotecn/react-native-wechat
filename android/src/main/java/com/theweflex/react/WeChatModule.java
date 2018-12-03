@@ -29,6 +29,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelbiz.OpenWebview;
+import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXFileObject;
@@ -60,7 +61,6 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     private final static String NOT_REGISTERED = "registerApp required.";
     private final static String INVOKE_FAILED = "WeChat API invoke returns false.";
     private final static String INVALID_ARGUMENT = "invalid argument.";
-
     public WeChatModule(ReactApplicationContext context) {
         super(context);
     }
@@ -217,6 +217,29 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
     public void contract(String url, Callback callback) {
         OpenWebview.Req req = new OpenWebview.Req();
         req.url = url;
+        callback.invoke(api.sendReq(req) ? null : INVOKE_FAILED);
+    }
+
+    @ReactMethod
+    public void openWeApp(ReadableMap data , Callback callback) {
+        String appId = null;
+        String userName=null;
+        String path=null;
+        if (data.hasKey("appId")) {
+            appId = data.getString("appId");
+        }
+        if (data.hasKey("userName")) {
+            userName = data.getString("userName");
+        }
+        if (data.hasKey("path")) {
+            path = data.getString("path");
+        }
+
+        IWXAPI api = WXAPIFactory.createWXAPI(getReactApplicationContext(), appId);
+        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
+        req.userName = userName; // 填小程序原始id
+        req.path = path;                  //拉起小程序页面的可带参路径，不填默认拉起小程序首页
+        req.miniprogramType = WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE;// 可选打开 开发版，体验版和正式版
         callback.invoke(api.sendReq(req) ? null : INVOKE_FAILED);
     }
 

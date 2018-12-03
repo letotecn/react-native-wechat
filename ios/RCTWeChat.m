@@ -73,6 +73,15 @@ RCT_EXPORT_METHOD(contract:(NSString *)url
     req.url = url;
     callback(@[[WXApi sendReq:req] ? [NSNull null] : INVOKE_FAILED]);
 }
+RCT_EXPORT_METHOD(openWeApp:(NSDictionary *)data
+                  :(RCTResponseSenderBlock)callback)
+{
+    WXLaunchMiniProgramReq *launchMiniProgramReq = [WXLaunchMiniProgramReq object];
+    launchMiniProgramReq.userName = data[@"userName"];  //拉起的小程序的username
+    launchMiniProgramReq.path = data[@"path"];    //拉起小程序页面的可带参路径，不填默认拉起小程序首页
+    launchMiniProgramReq.miniProgramType = WXMiniProgramTypeRelease; //拉起小程序的类型
+    callback(@[[WXApi sendReq:launchMiniProgramReq] ? [NSNull null] : INVOKE_FAILED]);
+}
 RCT_EXPORT_METHOD(registerAppWithDescription:(NSString *)appid
                   :(BOOL)enableMTA
                   :(RCTResponseSenderBlock)callback)
