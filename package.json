@@ -1,6 +1,6 @@
 {
   "name": "react-native-letote-wechat",
-  "version": "3.5.4",
+  "version": "3.5.8",
   "description": "react-native library for wechat app",
   "main": "index.js",
   "scripts": {

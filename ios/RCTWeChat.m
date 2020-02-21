@@ -73,6 +73,15 @@ RCT_EXPORT_METHOD(contract:(NSString *)url
     req.url = url;
     callback(@[[WXApi sendReq:req] ? [NSNull null] : INVOKE_FAILED]);
 }
+
+RCT_EXPORT_METHOD(subscribe:(int *)scene :(NSString *)templateID
+                  :(RCTResponseSenderBlock)callback)
+{
+    WXSubscribeMsgReq *req = [[WXSubscribeMsgReq alloc] init];
+    req.scene = scene;
+    req.templateId = templateID;
+    callback(@[[WXApi sendReq:req] ? [NSNull null] : INVOKE_FAILED]);
+}
 RCT_EXPORT_METHOD(openWeApp:(NSDictionary *)data
                   :(RCTResponseSenderBlock)callback)
 {
@@ -431,6 +440,15 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
         body[@"type"] = @(r.type);
         body[@"returnKey"] =r.returnKey;
         body[@"type"] = @"PayReq.Resp";
+        [self.bridge.eventDispatcher sendDeviceEventWithName:RCTWXEventName body:body];
+    }else if([resp isKindOfClass:[WXSubscribeMsgResp class]]){
+        WXSubscribeMsgResp *r = (WXSubscribeMsgResp *)resp;
+        NSMutableDictionary *body = @{@"errCode":@(r.errCode)}.mutableCopy;
+        body[@"type"] = @"Subscribe.Resp";
+        body[@"scene"] =[NSNumber numberWithInt:r.scene];
+        body[@"action"] = r.action;
+        body[@"templateID"] = r.templateId;
+        body[@"openId"] =r.openId;
         [self.bridge.eventDispatcher sendDeviceEventWithName:RCTWXEventName body:body];
     }
 }

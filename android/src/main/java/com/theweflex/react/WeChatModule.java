@@ -29,6 +29,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelbiz.OpenWebview;
+import com.tencent.mm.opensdk.modelbiz.SubscribeMessage;
 import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
@@ -118,7 +119,6 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
         }
         callback.invoke(null, api.isWXAppInstalled());
     }
-    
 
     @ReactMethod
     public void getApiVersion(Callback callback) {
@@ -246,6 +246,14 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
             }
         }
         return result;
+    }
+
+    @ReactMethod
+    public void subscribe(int scene, String templateID, Callback callback ) {
+        SubscribeMessage.Req req = new SubscribeMessage.Req();
+        req.scene = scene;
+        req.templateID = templateID;
+        callback.invoke(api.sendReq(req) ? null : INVOKE_FAILED);
     }
 
     private void _share(final int scene, final ReadableMap data, final Callback callback) {
@@ -556,6 +564,14 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
             PayResp resp = (PayResp) (baseResp);
             map.putString("type", "PayReq.Resp");
             map.putString("returnKey", resp.returnKey);
+        } else if (baseResp instanceof SubscribeMessage.Resp){
+            SubscribeMessage.Resp resp = (SubscribeMessage.Resp) (baseResp);
+            map.putString("type", "Subscribe.Resp");
+            map.putInt("scene", resp.scene);
+            map.putString("action", resp.action);
+            map.putString("templateID", resp.templateID);
+            map.putString("openId",resp.openId);
+
         }
 
         this.getReactApplicationContext()

@@ -113,6 +113,13 @@ export const registerAppWithDescription = wrapRegisterApp(
 export const isWXAppInstalled = wrapApi(WeChat.isWXAppInstalled)
 
 /**
+ * Return if the wechat application supports the api
+ * @method isWXAppSupportApi
+ * @return {Promise}
+ */
+export const isWXAppSupportApi = wrapApi(WeChat.isWXAppSupportApi)
+
+/**
  * Get the wechat app installed url
  * @method getWXAppInstallUrl
  * @return {String} the wechat app installed url
@@ -299,6 +306,21 @@ export function contract(data) {
     WeChat.contract(url, result => {
       if (result) reject('WeChat API invoke returns false.')
       else resolve('WeChat_GOBACK')
+    })
+  })
+}
+
+export function subscribe(data) {
+  return new Promise((resolve, reject) => {
+    WeChat.subscribe(data.scene, data.templateID, result => {
+      if (result) reject(result)
+    })
+    emitter.once('Subscribe.Resp', resp => {
+      if (resp.errCode === 0) {
+        resolve(resp)
+      } else {
+        reject(new WechatError(resp))
+      }
     })
   })
 }
