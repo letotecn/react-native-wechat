@@ -34,7 +34,8 @@ function wrapRegisterApp(nativeFunc) {
             return reject(new Error(error))
           }
           reject(error)
-        }
+        },
+        null
       ])
     })
   }
