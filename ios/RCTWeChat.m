@@ -59,8 +59,8 @@ RCT_EXPORT_MODULE()
     return YES;
 }
 
-RCT_EXPORT_METHOD(registerApp:(NSString *)appid
-                  :(RCTResponseSenderBlock)callback :(NSString *)universalLink)
+RCT_EXPORT_METHOD(registerApp:(NSString *)appid universalLink:(NSString *)universalLink
+                  :(RCTResponseSenderBlock)callback)
 {
     self.appId = appid;
     callback(@[[WXApi registerApp:appid universalLink:universalLink] ? [NSNull null] : INVOKE_FAILED]);
@@ -407,9 +407,9 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
     req.message = message;
     
     [WXApi sendReq:req completion:^(BOOL success) {
-         callback(@[success ? [NSNull null] : INVOKE_FAILED]);
+        callback(@[success ? [NSNull null] : INVOKE_FAILED]);
     }];
-   
+    
 }
 
 #pragma mark - wx callback
