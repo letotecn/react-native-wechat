@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RCTWeChat"
-  s.version      = "3.6.4"
+  s.version      = "3.7.0"
   s.summary      = "React-Native(iOS/Android) functionalities include WeChat Login, Share, Favorite and Payment {QQ: 336021910}"
 
   # This description is used to generate tags and improve search results.
@@ -31,8 +31,6 @@ Pod::Spec.new do |s|
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   s.dependency "React"
-  s.vendored_libraries = "libWeChatSDK.a"
-  s.ios.frameworks = 'SystemConfiguration','CoreTelephony','XCTest'
-  s.ios.library = 'sqlite3','c++','z'
+  s.dependency "WechatOpenSDK"
 
 end
