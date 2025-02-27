@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 android {
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
   if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
-    namespace "com.letotecn.wechat"
+    namespace "com.theweflex.react"
   }
   
   compileSdkVersion 23
